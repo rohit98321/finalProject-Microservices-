@@ -9,7 +9,10 @@ let mongoServer;
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
-  await mongoose.connect(uri, { dbName: 'jest' });
+  process.env.MONGODB_URI=uri;
+  process.env.JWT_SECRET="test_jwt_secret"
+
+  await mongoose.connect(uri);
 });
 
 afterAll(async () => {

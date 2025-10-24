@@ -8,13 +8,30 @@ const registerUser = async (req, res) => {
     username,
     email,
     password,
-    fullName: { firstName, lastName },
+    fullName,
     role,
   } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({
+      message: "username, email, and password are required"
+    });
+  }
+
+  if (!fullName || !fullName.firstName || !fullName.lastName) {
+    return res.status(400).json({
+      message: "fullName.firstName & lastName required"
+    });
+  }
+
+  const {firstName,lastName}=fullName;
+  console.log(fullName);
 
   const isUserAlreadyExist = await userModel.findOne({
     $or: [{ username }, { email }],
   });
+
+  
 
   if (isUserAlreadyExist) {
     return res.status(400).json({
@@ -53,12 +70,13 @@ const registerUser = async (req, res) => {
     });
 
     res.status(201).json({
-      message: "user created",
+      message: "User created successfully",
       user,
     });
   } catch (error) {
-    res.status(404).json({
+    res.status(500).json({
       message: "something is wrong",
+      error
     });
   }
 };

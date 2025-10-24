@@ -10,16 +10,14 @@ describe('POST /auth/register', () => {
         username: 'rohit',
         email: 'rohit@example.com',
         password: 'password123',
-        fullName: {
-          firstName: 'Rohit',
-          lastName: 'Gupta',
-        },
+        fullName: { firstName: 'Rohit', lastName: 'Gupta' },
         role: 'user',
       });
 
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty('message', 'User created successfully');
     expect(res.body.user).toHaveProperty('email', 'rohit@example.com');
+    expect(res.headers['set-cookie'][0]).toMatch(/token=/);
   });
 
   it('should return 400 if user already exists', async () => {
@@ -48,14 +46,17 @@ describe('POST /auth/register', () => {
     );
   });
 
-  it('should return 500 if missing required fields', async () => {
+  it('should return 400 if missing required fields', async () => { 
     const res = await request(app)
       .post('/auth/register')
       .send({
         email: 'invalid@example.com',
       });
 
-    expect(res.statusCode).toBe(500);
-    expect(res.body).toHaveProperty('message', 'Something went wrong');
+    expect(res.statusCode).toBe(400);
+    expect(res.body).toHaveProperty(
+      'message',
+      'username, email, and password are required'
+    );
   });
 });
