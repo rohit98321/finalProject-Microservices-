@@ -5,7 +5,8 @@ const adressSchema=new mongoose.Schema({
     city:String,
     state:String,
     zip:String,
-    country:String
+    country:String,
+    isDefault:{type:Boolean,default:false}
 })
 
 const userSchema=new mongoose.Schema({
