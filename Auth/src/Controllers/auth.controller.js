@@ -169,10 +169,16 @@ const getUserAddresses =async (req,res)=>{
 
   }
 
-  return res.status(200).json({
-    message:"user addressess fetched seuccessfully",
-    user
-  })
+
+
+ const addresses = user.addresses || [];
+const defaultAddress = addresses.find(a => a.isDefault === true);
+
+return res.status(200).json({
+  message: "user addresses fetched successfully",
+  addresses,
+  defaultAddressId: defaultAddress ? defaultAddress._id : null
+});
 
 
 

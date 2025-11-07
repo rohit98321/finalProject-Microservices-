@@ -23,6 +23,6 @@ afterAll(async () => {
 afterEach(async () => {
   const collections = mongoose.connection.collections;
   for (const key in collections) {
-    await collections[key].deleteMany(); // clean DB after every test
+    await collections[key].deleteMany({}); // clean DB after every test
   }
 });
