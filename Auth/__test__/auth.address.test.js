@@ -28,9 +28,9 @@ describe('User addresses API', () => {
         return { user, cookies };
     }
 
-    describe('GET /auth/me/addresses', () => {
+    describe('GET /auth/users/me/addresses', () => {
         it('requires authentication (401 without cookie)', async () => {
-            const res = await request(app).get('/auth/me/addresses');
+            const res = await request(app).get('/auth/users/me/addresses');
             expect(res.status).toBe(401);
         });
 
@@ -38,13 +38,13 @@ describe('User addresses API', () => {
             const { user, cookies } = await seedUserAndLogin({ username: 'lister', email: 'lister@example.com' });
 
             user.addresses.push(
-                { street: '221B Baker St', city: 'London', state: 'LDN', zip: 'NW16XE', country: 'UK', isDefault: true },
-                { street: '742 Evergreen Terrace', city: 'Springfield', state: 'SP', zip: '49007', country: 'USA' }
+                { street: '221B Baker St', city: 'London', state: 'LDN', pincode: 'NW16XE', country: 'UK', isDefault: true },
+                { street: '742 Evergreen Terrace', city: 'Springfield', state: 'SP', pincode: '49007', country: 'USA' }
             );
             await user.save();
 
             const res = await request(app)
-                .get('/auth/me/addresses')
+                .get('/auth/users/me/addresses')
                 .set('Cookie', cookies);
 
             expect(res.status).toBe(200);
@@ -56,12 +56,12 @@ describe('User addresses API', () => {
         });
     });
 
-    describe('POST /auth/me/addresses', () => {
+    describe('POST /auth/users/me/addresses', () => {
         it('validates pincode and phone and returns 400 on invalid input', async () => {
             const { cookies } = await seedUserAndLogin({ username: 'adder1', email: 'adder1@example.com' });
 
             const res = await request(app)
-                .post('/auth/me/addresses')
+                .post('/auth/users/me/addresses')
                 .set('Cookie', cookies)
                 .send({
                     street: '12 Invalid Ave',
@@ -79,7 +79,7 @@ describe('User addresses API', () => {
             const { cookies } = await seedUserAndLogin({ username: 'adder2', email: 'adder2@example.com' });
 
             const res = await request(app)
-                .post('/auth/me/addresses')
+                .post('/auth/users/me/addresses')
                 .set('Cookie', cookies)
                 .send({
                     street: '1600 Amphitheatre Pkwy',
@@ -98,20 +98,20 @@ describe('User addresses API', () => {
         });
     });
 
-    describe('DELETE /auth/me/addresses/:addressId', () => {
+    describe('DELETE /auth/users/me/addresses/:addressId', () => {
         it('removes an address; returns 200 and updates list', async () => {
             const { user, cookies } = await seedUserAndLogin({ username: 'deleter', email: 'deleter@example.com' });
 
             user.addresses.push(
-                { street: 'A St', city: 'X', state: 'X', zip: '11111', country: 'US' },
-                { street: 'B St', city: 'Y', state: 'Y', zip: '22222', country: 'US' }
+                { street: 'A St', city: 'X', state: 'X', pincode: '11111', country: 'US' },
+                { street: 'B St', city: 'Y', state: 'Y', pincode: '22222', country: 'US' }
             );
             await user.save();
 
             const idToDelete = user.addresses[0]._id.toString();
 
             const res = await request(app)
-                .delete(`/auth/me/addresses/${idToDelete}`)
+                .delete(`/auth/users/me/addresses/${idToDelete}`)
                 .set('Cookie', cookies);
 
             expect(res.status).toBe(200);
@@ -124,7 +124,7 @@ describe('User addresses API', () => {
 
             const fakeId = new mongoose.Types.ObjectId().toString();
             const res = await request(app)
-                .delete(`/auth/me/addresses/${fakeId}`)
+                .delete(`/auth/users/me/addresses/${fakeId}`)
                 .set('Cookie', cookies);
 
             expect(res.status).toBe(404);

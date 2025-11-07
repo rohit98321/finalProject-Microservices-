@@ -42,7 +42,7 @@ const registerUser = async (req, res) => {
         firstName,
         lastName,
       },
-      role,
+      role:role||'user'
     });
 
     const token = jwt.sign(
